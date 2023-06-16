@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+}
+.menu {
+    flex: 1;
+    border-right: 1px solid #000;
+    padding: 10px;
+}
+.chat {
+    flex: 2;
+    padding: 10px;
+}
+.message.user {
+    background-color: white;
+}
+
+.message.assistant {
+    background-color: lightblue;
+}
+

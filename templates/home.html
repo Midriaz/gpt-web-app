@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Application</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <h1>Main Menu</h1>
+            <a href="/chat/new">Start New Conversation</a>
+            <h2>Previous Conversations</h2>
+            <ul>
+                {% for c in conversations %}
+                    <li>
+                        <a href="/chat/{{ conversation.id }}">{{ c.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="chat">
+            <h1>{{ conversation.title }}</h1>
+            <div id="chat-content">
+                {% for message in conversation.messages %}
+                    <div class="message {{ message.role }}">
+                        {{ message.content }}
+                    </div>
+                {% endfor %}
+            </div>
+            <form action="/chat/{{ conversation.id }}/regenerate" method="post">
+                <input type="submit" value="Regenerate Last Response">
+            </form>
+            <form action="/chat/{{ conversation.id }}/send" method="post">
+                <input type="text" name="message" required>
+                <input type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

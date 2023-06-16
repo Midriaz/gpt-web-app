@@ -1,5 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/python,macos,pycharm,visualstudiocode,venv
-# Edit at https://www.toptal.com/developers/gitignore?templates=python,macos,pycharm,visualstudiocode,venv
+gpt.db
 
 ### macOS ###
 # General

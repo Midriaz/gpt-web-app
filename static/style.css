@@ -1,20 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
 .container {
     display: flex;
+    height: 100vh;
 }
+
 .menu {
     flex: 1;
-    border-right: 1px solid #000;
-    padding: 10px;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
 }
+
 .chat {
     flex: 2;
-    padding: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
+
+.message {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
 .message.user {
-    background-color: white;
+    align-self: flex-end;
+    background-color: #007bff;
+    color: white;
 }
 
 .message.assistant {
-    background-color: lightblue;
+    align-self: flex-start;
+    background-color: #f8f9fa;
+    color: black;
 }
 
+form {
+    display: flex;
+    margin-top: 20px;
+}
+
+form textarea {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    /* resize: none; */
+}
+
+form input[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #0056b3;
+}

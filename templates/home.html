@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Chat Application</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
@@ -13,7 +13,7 @@
             <ul>
                 {% for c in conversations %}
                     <li>
-                        <a href="/chat/{{ conversation.id }}">{{ c.title }}</a>
+                        <a href="/chat/{{ c.id }}">{{ c.title }}</a>
                     </li>
                 {% endfor %}
             </ul>
@@ -31,7 +31,7 @@
                 <input type="submit" value="Regenerate Last Response">
             </form>
             <form action="/chat/{{ conversation.id }}/send" method="post">
-                <input type="text" name="message" required>
+                <textarea name="message" required></textarea>
                 <input type="submit" value="Send">
             </form>
         </div>

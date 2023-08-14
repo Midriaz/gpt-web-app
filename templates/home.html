@@ -3,6 +3,7 @@
 <head>
     <title>Chat Application</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='main.js') }}" async></script>
 </head>
 <body>
     <div class="container">
@@ -23,7 +24,7 @@
             <div id="chat-content">
                 {% for message in conversation.messages %}
                     <div class="message {{ message.role }}">
-                        {{ message.content }}
+                        {{ message.content | markdown }}
                     </div>
                 {% endfor %}
             </div>
@@ -31,8 +32,8 @@
                 <input type="submit" value="Regenerate Last Response">
             </form>
             <form action="/chat/{{ conversation.id }}/send" method="post">
-                <textarea name="message" required></textarea>
-                <input type="submit" value="Send">
+                <textarea name="message" required id="requestArea"></textarea>
+                <input type="submit" value="Send" id="sendButton" onclick="disableButton()">
             </form>
         </div>
     </div>

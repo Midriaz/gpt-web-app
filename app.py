@@ -6,6 +6,8 @@ from sqlalchemy import desc
 from functools import wraps
 import openai
 from flask_migrate import Migrate
+from flaskext.markdown import Markdown
+import config
 
 
 load_dotenv()
@@ -21,6 +23,7 @@ migrate = Migrate(app, db)
 # db.init_app(app)
 # db.create_all()
 
+Markdown(app, extensions=['fenced_code', 'tables'])
 
 openai.organization = OPENAI_ORGANIZATION
 openai.api_key = OPENAI_API_KEY
@@ -57,7 +60,7 @@ def get_response(conversation, prompt):
     messages.append({"role": "user", "content": prompt})
 
     response = openai.ChatCompletion.create(
-      model="gpt-3.5-turbo",
+      model=config.MODEL,
       messages=messages
     )
     return response['choices'][0]['message']['content']
@@ -161,7 +164,7 @@ def send_message(id):
             {"role": "user", "content": "Name our conversation (max 50 chars)"} 
         ]
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=config.MODEL,
             messages=messages
         )
         title = response['choices'][0]['message']['content']

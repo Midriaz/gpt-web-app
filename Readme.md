@@ -56,3 +56,7 @@ The application uses two models, `Conversation` and `Message`:
 
 - **Conversation:** Represents a conversation between the user and the GPT-4 model. Each conversation has a title and a list of messages.
 - **Message:** Represents a message in a conversation. Each message has a role (either "user" or "assistant"), content, and a reference to the conversation it belongs to.
+
+
+## Usage
+https://platform.openai.com/account/usage

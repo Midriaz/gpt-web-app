@@ -60,3 +60,19 @@ The application uses two models, `Conversation` and `Message`:
 
 ## Usage
 https://platform.openai.com/account/usage
+
+## Authentication
+To ensure that only authorized users can access the application, a simple authentication mechanism has been implemented. The credentials for accessing the application are stored in the .env file as environment variables.
+
+### Setting Up Authentication
+In your .env file, add the following lines:
+
+USERNAME=your_desired_username
+PASSWORD=your_desired_password
+
+Replace your_desired_username and your_desired_password with your chosen username and password.
+
+When you access the application, you'll be prompted to enter the username and password. After successful authentication, you can use the application for a week without needing to re-authenticate.
+
+### Security Note
+This authentication mechanism is basic and is suitable for demonstration or development purposes. For a more secure and robust solution, especially for production deployments, consider integrating with more advanced authentication systems or Flask extensions like Flask-Login, Flask-User, or Flask-Security.

@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from functools import wraps
@@ -8,16 +8,20 @@ import openai
 from flask_migrate import Migrate
 from flaskext.markdown import Markdown
 import config
+from datetime import timedelta
 
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 WHITELISTED_IPS = os.getenv("WHITELISTED_IPS").split(',')
 OPENAI_ORGANIZATION = os.getenv("OPENAI_ORGANIZATION")
+USERNAME = os.getenv("USERNAME")
+PASSWORD = os.getenv("PASSWORD")
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gpt.db')
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # db.init_app(app)
@@ -45,13 +49,51 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'), nullable=False)
 
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username == USERNAME and password == PASSWORD:
+            session['logged_in'] = True
+            return redirect(url_for('main_menu'))
+        else:
+            return "Invalid credentials", 401
+    return render_template('login.html')
+
+
 def limit_ip_access(func):
     @wraps(func)
+    # def decorated(*args, **kwargs):
+    #     # if request.remote_addr not in WHITELISTED_IPS:
+    #     #     abort(403)  # Forbidden
+    #     return func(*args, **kwargs)
+    # return decorated
+
     def decorated(*args, **kwargs):
-        # if request.remote_addr not in WHITELISTED_IPS:
-        #     abort(403)  # Forbidden
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
         return func(*args, **kwargs)
     return decorated
+
+def chat_request(messages):
+    try:
+        response = openai.ChatCompletion.create(
+            model=config.MODEL,
+            messages=messages
+        )
+        return {
+            "success": True,
+            "content": response['choices'][0]['message']['content']
+        }
+    except openai.error.InvalidRequestError as e:
+        return {
+            "success": False,
+            "content": e._message
+        }
+
 
 
 def get_response(conversation, prompt):
@@ -59,11 +101,8 @@ def get_response(conversation, prompt):
     messages = [{"role": message.role, "content": message.content} for message in conversation.messages]
     messages.append({"role": "user", "content": prompt})
 
-    response = openai.ChatCompletion.create(
-      model=config.MODEL,
-      messages=messages
-    )
-    return response['choices'][0]['message']['content']
+    response = chat_request(messages)
+    return response['content']
 
 
 def render_home(id = None, new = False):
@@ -163,14 +202,12 @@ def send_message(id):
             {"role": "assistant", "content": assistant_message.content},
             {"role": "user", "content": "Name our conversation (max 50 chars)"} 
         ]
-        response = openai.ChatCompletion.create(
-            model=config.MODEL,
-            messages=messages
-        )
-        title = response['choices'][0]['message']['content']
-        title = title.replace('"', '')
-        conversation.title = title[:50]
-        db.session.commit()
+        new_title = chat_request(messages)
+        if new_title['success']:
+            title = new_title['content']
+            title = title.replace('"', '')
+            conversation.title = title[:50]
+            db.session.commit()
 
     # Redirect back to the chat view
     return redirect(url_for('view_chat', id=id))
